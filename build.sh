@@ -23,7 +23,11 @@ echo ""
 # Step 1: Assemble bootloader
 echo -e "${BLUE}[*] Assembling bootloader...${NC}"
 nasm -f bin main.asm -o boot.bin
-echo -e "${GREEN}[+] Bootloader created: boot.bin (512 bytes)${NC}"
+echo -e "${GREEN}[+] Stage1 bootloader created: boot.bin (512 bytes)${NC}"
+echo -e "${BLUE}[*] Assembling stage2 loader...${NC}"
+nasm -f bin loader.asm -o loader.bin
+echo -e "${GREEN}[+] Stage2 loader created: loader.bin (${NC}$(stat -c%s loader.bin) bytes)"
+echo ""
 echo ""
 
 # Step 2: Compile C source files
@@ -57,14 +61,23 @@ echo ""
 echo -e "${BLUE}[*] Creating ISO directory structure...${NC}"
 rm -rf iso_root
 mkdir -p iso_root/boot
-cp boot.bin iso_root/boot/
-cp kernel.bin iso_root/boot/
-echo -e "${GREEN}[+] ISO directory created${NC}"
+echo -e "${BLUE}[*] Creating combined El Torito boot image (boot.bin + loader.bin + kernel.bin)...${NC}"
+cat boot.bin loader.bin kernel.bin > boot_image.bin
+BOOT_SECTORS=$(( ( $(stat -c%s boot_image.bin) + 511 ) / 512 ))
+cp boot_image.bin iso_root/boot/boot.bin
+echo -e "${GREEN}[+] ISO directory created (boot image ${BOOT_SECTORS} sectors)${NC}"
 echo ""
 
 # Step 6: Create bootable ISO
 echo -e "${BLUE}[*] Creating bootable ISO image...${NC}"
-cd iso_root && mkisofs -R -b boot/boot.bin -no-emul-boot -boot-load-size 4 -o ../glitchos.iso . && cd ..
+# Using xorriso for better El Torito no-emulation support
+if command -v xorriso >/dev/null 2>&1; then
+    xorriso -as mkisofs -R -b boot/boot.bin -c boot.cat -no-emul-boot -boot-load-size ${BOOT_SECTORS} \
+        -o glitchos.iso iso_root/
+else
+    mkisofs -R -b boot/boot.bin -c boot.cat -no-emul-boot -boot-load-size ${BOOT_SECTORS} \
+        -o glitchos.iso iso_root/
+fi
 echo -e "${GREEN}[+] ISO image created: glitchos.iso${NC}"
 echo ""
 
