@@ -39,7 +39,6 @@ typedef struct {
     VGA_Color background;
 } Terminal;
 
-/* Function declarations */
 void kernel_main();
 void terminal_initialize(VGA_Color fg, VGA_Color bg);
 void terminal_write_char(char c);

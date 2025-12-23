@@ -1,4 +1,6 @@
 #include "kernel.h"
+#include "apps.h"
+#include "desktop.h"
 
 /* Global terminal state */
 static Terminal g_terminal;
@@ -65,9 +67,21 @@ void kernel_main() {
     terminal_write_string("GlitchOS Kernel Starting...\n");
     terminal_write_string("Welcome to GlitchOS!\n");
     
-    /* Kernel main loop */
+    /* Initialize desktop and launch app manager */
+    desktop_initialize();
+    app_manager_initialize();
+    
+    /* Launch a few default apps to show off the desktop */
+    app_launch(APP_TERMINAL);
+    app_launch(APP_SETTINGS);
+    app_launch(APP_FILES);
+    
+    /* Draw the desktop with all windows */
+    app_manager_draw();
+    
+    /* Main loop */
     while (1) {
-        /* Halt the CPU */
+        app_manager_update();
         asm("hlt");
     }
 }
