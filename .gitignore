@@ -32,3 +32,23 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Screenshots and media
+screenshot.png
+*.screenshot.png
+screen.xwd
+
+# Build artifacts
+*.o
+*.elf
+*.bin
+boot.bin
+kernel.bin
+kernel.elf
+
+# ISO files
+glitchos.iso
+
+# VM artifacts
+*.qcow2
+iso_root/
