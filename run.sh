@@ -4,7 +4,7 @@
 
 set -e
 
-ISO_FILE="${1:-./ glitchos.iso}"
+ISO_FILE="${1:-./glitchos.iso}"
 LOG_FILE="${2:-serial.log}"
 
 echo "================================================"
