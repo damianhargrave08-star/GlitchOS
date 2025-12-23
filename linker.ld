@@ -1,22 +1,59 @@
 ENTRY(kernel_main)
 
+/*
+ * Linker script for GlitchOS
+ * - Kernel is linked to run at physical address 0x1000 (real-mode jump target)
+ * - Define symbols for section boundaries so the kernel can inspect sizes
+ */
 SECTIONS
 {
+    /* Load address / execution base for the kernel */
     . = 0x1000;
-    
-    .text : {
-        *(.text)
+
+    /* Mark start of the kernel image */
+    __kernel_start = .;
+
+    .text : ALIGN(0x10)
+    {
+        __text_start = .;
+        *(.text .text.*)
+        *(.rodata .rodata.*)
+        __text_end = .;
     }
-    
-    .rodata : {
-        *(.rodata)
+
+    .rodata : ALIGN(0x10)
+    {
+        __rodata_start = .;
+        *(.rodata .rodata.*)
+        __rodata_end = .;
     }
-    
-    .data : {
-        *(.data)
+
+    .data : ALIGN(0x10)
+    {
+        __data_start = .;
+        *(.data .data.*)
+        __data_end = .;
     }
-    
-    .bss : {
-        *(.bss)
+
+    .bss : ALIGN(0x10)
+    {
+        __bss_start = .;
+        *(.bss .bss.*)
+        *(COMMON)
+        __bss_end = .;
     }
+
+    /* Mark end of kernel image */
+    __kernel_end = .;
+
+    /* Provide a stack top symbol; kernel will use this as a reference for
+     * setting up the initial stack. This is a virtual address and can be
+     * adjusted as needed. */
+    PROVIDE(__stack_top = 0x90000);
 }
+
+/* Provide some useful aliases for C code */
+PROVIDE(_kernel_start = __kernel_start);
+PROVIDE(_kernel_end = __kernel_end);
+PROVIDE(_stack_top = __stack_top);
+
