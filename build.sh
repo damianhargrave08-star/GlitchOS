@@ -27,27 +27,30 @@ echo -e "${GREEN}[+] Stage1 bootloader created: boot.bin (512 bytes)${NC}"
 echo -e "${BLUE}[*] Assembling stage2 loader...${NC}"
 nasm -f bin loader.asm -o loader.bin
 echo -e "${GREEN}[+] Stage2 loader created: loader.bin (${NC}$(stat -c%s loader.bin) bytes)"
+echo -e "${BLUE}[*] Assembling protected-mode entry stub...${NC}"
+nasm -f bin pm_entry.asm -o pm_entry.bin
+echo -e "${GREEN}[+] PM entry stub created: pm_entry.bin ($(stat -c%s pm_entry.bin) bytes)${NC}"
 echo ""
 echo ""
 
 # Step 2: Compile C source files
 echo -e "${BLUE}[*] Compiling C source files...${NC}"
-gcc -c kernel.c -o kernel.o -ffreestanding -Wall -Wextra -Werror
+gcc -m32 -c kernel.c -o kernel.o -ffreestanding -Wall -Wextra -Werror
 echo -e "${GREEN}[+] kernel.c compiled${NC}"
 
-gcc -c desktop.c -o desktop.o -ffreestanding -Wall -Wextra -Werror
+gcc -m32 -c desktop.c -o desktop.o -ffreestanding -Wall -Wextra -Werror
 echo -e "${GREEN}[+] desktop.c compiled${NC}"
 
-gcc -c apps.c -o apps.o -ffreestanding -Wall -Wextra -Werror
+gcc -m32 -c apps.c -o apps.o -ffreestanding -Wall -Wextra -Werror
 echo -e "${GREEN}[+] apps.c compiled${NC}"
 
-gcc -c app_implementations.c -o app_impl.o -ffreestanding -Wall -Wextra -Werror
+gcc -m32 -c app_implementations.c -o app_impl.o -ffreestanding -Wall -Wextra -Werror
 echo -e "${GREEN}[+] app_implementations.c compiled${NC}"
 echo ""
 
 # Step 3: Link kernel
 echo -e "${BLUE}[*] Linking kernel...${NC}"
-ld -T linker.ld -o kernel.elf kernel.o desktop.o apps.o app_impl.o
+ld -m elf_i386 -T linker.ld -o kernel.elf kernel.o desktop.o apps.o app_impl.o
 echo -e "${GREEN}[+] Kernel linked: kernel.elf${NC}"
 echo ""
 
@@ -61,8 +64,8 @@ echo ""
 echo -e "${BLUE}[*] Creating ISO directory structure...${NC}"
 rm -rf iso_root
 mkdir -p iso_root/boot
-echo -e "${BLUE}[*] Creating combined El Torito boot image (boot.bin + loader.bin + kernel.bin)...${NC}"
-cat boot.bin loader.bin kernel.bin > boot_image.bin
+echo -e "${BLUE}[*] Creating combined El Torito boot image (boot.bin + loader.bin + pm_entry.bin + kernel.bin)...${NC}"
+cat boot.bin loader.bin pm_entry.bin kernel.bin > boot_image.bin
 BOOT_SECTORS=$(( ( $(stat -c%s boot_image.bin) + 511 ) / 512 ))
 cp boot_image.bin iso_root/boot/boot.bin
 echo -e "${GREEN}[+] ISO directory created (boot image ${BOOT_SECTORS} sectors)${NC}"

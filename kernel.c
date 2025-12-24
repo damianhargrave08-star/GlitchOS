@@ -13,6 +13,11 @@ static void write_to_vram(uint16_t x, uint16_t y, char c) {
     vram[index] = (attr << 8) | c;
 }
 
+/* Send a character to COM1 (0x3F8) for serial debugging */
+static inline void serial_write_char(char c) {
+    asm volatile ("outb %0, %1" :: "a"(c), "d"((uint16_t)0x3F8));
+}
+
 void terminal_initialize(VGA_Color fg, VGA_Color bg) {
     g_terminal.cursor_x = 0;
     g_terminal.cursor_y = 0;
@@ -53,6 +58,8 @@ void terminal_write_char(char c) {
     
     write_to_vram(g_terminal.cursor_x, g_terminal.cursor_y, c);
     g_terminal.cursor_x++;
+    /* Mirror to serial for headless debugging */
+    serial_write_char(c);
 }
 
 void terminal_write_string(const char *str) {

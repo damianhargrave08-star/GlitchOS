@@ -7,8 +7,14 @@ ENTRY(kernel_main)
  */
 SECTIONS
 {
-    /* Load address / execution base for the kernel */
-    . = 0x1000;
+    /* Load address / execution base for the kernel
+     * Kernel is concatenated into the El Torito boot image after
+     * boot.bin (0x200) and loader.bin (0x1000) when the ISO is
+     * built. When the BIOS loads the full boot image at 0x7C00,
+     * the kernel's physical load address is 0x8E00. Link the kernel
+     * to that address so runtime pointers and absolute references
+     * match the loader's jump target. */
+    . = 0x9000;
 
     /* Mark start of the kernel image */
     __kernel_start = .;

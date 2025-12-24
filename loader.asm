@@ -24,9 +24,52 @@ start:
     mov si, loader_msg
     call print
     
-    ; Jump to kernel at 0x8C00 (segment 0x08C0, offset 0x0000)
-    ; Memory layout at 0x7C00: boot.bin(512B) + loader.bin(4096B) + kernel.bin
-    jmp 0x08C0:0x0000
+    ; Prepare to enter protected mode and jump to kernel at 0x9000
+    ; Build a small GDT (null, code, data) and enable PE in CR0.
+    lgdt [gdt_descriptor]
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+    jmp 0x08:pm_protected
+
+; GDT: null, code (base=0, limit=4GB, access=0x9A), data (access=0x92)
+gdt_start:
+    dd 0x00000000
+    dd 0x00000000
+    dw 0xFFFF
+    dw 0x0000
+    db 0x00
+    db 0x9A
+    db 0xCF
+    db 0x00
+    dw 0xFFFF
+    dw 0x0000
+    db 0x00
+    db 0x92
+    db 0xCF
+    db 0x00
+gdt_end:
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
+
+bits 32
+pm_protected:
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, 0x90000
+    ; Debug: output 'PM' over COM1 to verify protected mode active
+    mov dx, 0x3F8
+    mov al, 'P'
+    out dx, al
+    mov al, 'M'
+    out dx, al
+    jmp 0x08:0x00009000
+bits 16
 
 ; print: Output SI string via BIOS INT 10h and serial port 0x3F8
 print:
