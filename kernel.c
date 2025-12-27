@@ -92,3 +92,7 @@ void kernel_main() {
         asm("hlt");
     }
 }
+/*for BIOS TO PASS TO Kernel*/
+/*Terminal Ignores Warnings, Errors.*/
+
+/* End of boot sector structure */
