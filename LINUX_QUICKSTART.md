@@ -6,13 +6,13 @@ Install QEMU on your Linux system:
 
 ```bash
 # Ubuntu/Debian
-sudo apt-get install qemu-system-x86
+sudo apt-get install qemu-system
 
 # Fedora/RHEL
-sudo dnf install qemu-system-x86
+sudo dnf install qemu-system
 
 # Arch
-sudo pacman -S qemu-system-x86
+sudo pacman -S qemu-system
 
 # macOS (Homebrew)
 brew install qemu
@@ -147,3 +147,6 @@ sudo apt-get install nasm gcc binutils xorriso
 ---
 
 **Enjoy GlitchOS!** 🎉
+
+also see readme.md to see if this OS Is even operable.
+**ENJOY!**
