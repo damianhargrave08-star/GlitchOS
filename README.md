@@ -1,5 +1,16 @@
 # GlitchOS
-is now a .iso format now!
-Get it while you can!
+ITS NOW UP AND RUNNING!
 
-credits: me, and other os devs.
+-FIXES:
+hanging system bug
+Desktop wont start bug
+(so on and so fourth)   
+
+-addons:
+same everything!
+added a magic number to desktop.c and pm_entery.asm!
+
+-deletes:
+glitchos.qcow2 file!
+
+-thats all!
