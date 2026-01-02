@@ -70,4 +70,8 @@ pm_protected:
 ; Pad to 512 bytes so this stub occupies one sector
 times 512 - ($ - $$) db 0
 ; kernel shows desktop here
- jmp 0x42 ; Jumps to magic boot number 4d 5a in desktop.c and starts desktop.c at global desktop state
+ jmp 0x4d5a ; Jumps to magic boot number 4d 5a in desktop.c and starts desktop.c at global desktop state
+    db 'MZ' ; Magic boot number 4d 5a for desktop.c
+; fixes hang on some systems during boot
+; magic number for fixing hang bug
+    db 0x00, 0x00     ; auto fix hang bug
