@@ -165,3 +165,6 @@ void desktop_draw() {
 void desktop_update() {
     desktop_draw();
 }
+/* --- DESKTOP MAGIC BOOT NUMBER 42 --- */
+/*jump to Global desktop state*/
+/* --- IGNORE --- */
