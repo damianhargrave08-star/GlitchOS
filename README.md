@@ -10,10 +10,10 @@ Desktop wont start bug
 same everything!
 added a magic number to desktop.c and pm_entery.asm!
 
--deletes:
+- deletes:
 glitchos.qcow2 file!
 - EOL Versions:
 - 4.0
 - 5.0
-
--thats all!
+- 5.1
+- thats all!
